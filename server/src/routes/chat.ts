@@ -1,13 +1,10 @@
 import express from 'express';
 import OpenAI from 'openai';
 import dotenv from 'dotenv';
+import path from 'path';
+import { readFileContent } from '../utils/fileUtils';
 
 dotenv.config();
-
-interface ChatMessage {
-    role: string;
-    content: string;
-}
 
 const router = express.Router();
 
@@ -19,16 +16,25 @@ const client = new OpenAI({
 
 router.post('/chat', async (req, res) => {
     try {
-        const { message, code, error } = req.body;
+        const { message, filePath, currentCode, error } = req.body;
+
+        // Get the file content if a path is provided
+        let fileContent = currentCode;
+        if (filePath) {
+            const absolutePath = path.join(process.cwd(), '..', filePath);
+            fileContent = readFileContent(absolutePath) || currentCode;
+        }
 
         // Construct the messages array
         const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
             {
                 role: "system",
-                content: "You are a helpful coding assistant. " + 
-                    (code ? `Here's the code being discussed:\n\`\`\`\n${code}\n\`\`\`\n` : '') +
+                content: "You are a helpful coding assistant. Your task is to help with code understanding, suggestions, and improvements. " + 
+                    "When suggesting code changes, format them as follows:\n" +
+                    "```suggestion\n[your code suggestion here]\n```\n" +
+                    (fileContent ? `Here's the current code:\n\`\`\`\n${fileContent}\n\`\`\`\n` : '') +
                     (error ? `The user is encountering this error:\n\`\`\`\n${error}\n\`\`\`\n` : '') +
-                    "Please provide clear, concise assistance."
+                    "Please provide clear, concise assistance and specific code suggestions when appropriate."
             },
             {
                 role: "user",
@@ -45,11 +51,15 @@ router.post('/chat', async (req, res) => {
             model: "gpt-4o"
         });
 
-        // Extract the response text
+        // Extract the response text and check for code suggestions
         const responseText = response.choices[0].message.content || 'No response generated';
+        const suggestions = responseText.match(/```suggestion\n([\s\S]*?)```/g)?.map(match => {
+            return match.replace(/```suggestion\n/, '').replace(/```$/, '').trim();
+        }) || [];
 
         res.json({
-            message: responseText
+            message: responseText,
+            suggestions: suggestions
         });
     } catch (error) {
         console.error('Chat API Error:', error);
