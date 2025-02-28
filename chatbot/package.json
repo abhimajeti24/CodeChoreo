@@ -1,6 +1,0 @@
-{
-          "type": "module",
-          "dependencies": {
-                    "openai": "^4.86.1"
-          }
-}
