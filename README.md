@@ -1,13 +1,13 @@
 # CodeChoreo
 
-A real-time collaborative code editor with AI assistance powered by Azure OpenAI.
+A real-time collaborative code editor with AI assistance 
 
 ## Quick Start
 
 ### Prerequisites
 - Node.js 14+
-- npm or yarn
-- Azure OpenAI API access
+- npm
+- Github Access Token(for accessing the openai gpt-4o model)
 
 ### Setup Steps
 
@@ -17,25 +17,29 @@ A real-time collaborative code editor with AI assistance powered by Azure OpenAI
 git clone https://github.com/yourusername/CodeChoreo.git
 cd CodeChoreo
 
-# Install dependencies for both client and server
-cd server && npm install
-cd ../client && npm install
+# Install dependencies
+#Server
+cd server
+npm install
+
+#Client
+cd client
+npm install
 ```
 
 2. **Environment Setup**
 
-Server (.env in server directory):
+Create a .env in the server directory:
 ```env
-# Required: Azure OpenAI Configuration
-AZURE_OPENAI_API_KEY=your_azure_openai_api_key
-AZURE_OPENAI_ENDPOINT=your_azure_endpoint
-AZURE_DEPLOYMENT_NAME=your_deployment_name
+# Required: Personal Github Access Token for authenticating with the model
+GITHUHB_TOKEN=your_azure_openai_api_key
+
 
 # Optional: Server Configuration
 PORT=5000
 ```
 
-Client (.env in client directory):
+Create a .env in the client directory:
 ```env
 # Required: Server URL
 VITE_SERVER_URL=http://localhost:5000
@@ -44,21 +48,24 @@ VITE_SERVER_URL=http://localhost:5000
 3. **Start Development Servers**
 ```bash
 # Start server (in server directory)
+cd server
 npm run dev
 
 # Start client (in client directory)
+cd client
 npm run dev
 ```
 
 Visit `http://localhost:5173` to start using CodeChoreo.
 
-### Getting Azure OpenAI Access
+### Getting Github Access Token
 
-1. Go to [Azure Portal](https://portal.azure.com)
-2. Create an Azure OpenAI resource
-3. Get your API key and endpoint from the resource
-4. Create a deployment and note the deployment name
-5. [Official Azure OpenAI Documentation](https://learn.microsoft.com/en-us/azure/ai-services/openai/overview)
+1. Go to [Github Developer Settings](https://github.com/settings/tokens)
+2. Create an Personal Access Token(classic)
+3. Copy the token
+4. Paste the token in the .env file
+
+Reference: [Github Marketplace](https://github.com/marketplace/models/azure-openai/gpt-4o/playground)
 
 ## Features
 
@@ -96,14 +103,3 @@ Visit `http://localhost:5173` to start using CodeChoreo.
    - Server: Change PORT in .env
    - Client: Edit vite.config.ts port
 
-## Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/YourFeature`)
-3. Commit changes (`git commit -m 'feat: add some feature'`)
-4. Push to branch (`git push origin feature/YourFeature`)
-5. Open a Pull Request
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file
