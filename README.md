@@ -1,80 +1,109 @@
 # CodeChoreo
 
-CodeChoreo is an real-time collaborative code editor with integrated AI assistance, designed to enhance the coding experience with real-time suggestions, error analysis, and context-aware code completion.
+A real-time collaborative code editor with AI assistance powered by Azure OpenAI.
+
+## Quick Start
+
+### Prerequisites
+- Node.js 14+
+- npm or yarn
+- Azure OpenAI API access
+
+### Setup Steps
+
+1. **Clone and Install**
+```bash
+# Clone repository
+git clone https://github.com/yourusername/CodeChoreo.git
+cd CodeChoreo
+
+# Install dependencies for both client and server
+cd server && npm install
+cd ../client && npm install
+```
+
+2. **Environment Setup**
+
+Server (.env in server directory):
+```env
+# Required: Azure OpenAI Configuration
+AZURE_OPENAI_API_KEY=your_azure_openai_api_key
+AZURE_OPENAI_ENDPOINT=your_azure_endpoint
+AZURE_DEPLOYMENT_NAME=your_deployment_name
+
+# Optional: Server Configuration
+PORT=5000
+```
+
+Client (.env in client directory):
+```env
+# Required: Server URL
+VITE_SERVER_URL=http://localhost:5000
+```
+
+3. **Start Development Servers**
+```bash
+# Start server (in server directory)
+npm run dev
+
+# Start client (in client directory)
+npm run dev
+```
+
+Visit `http://localhost:5173` to start using CodeChoreo.
+
+### Getting Azure OpenAI Access
+
+1. Go to [Azure Portal](https://portal.azure.com)
+2. Create an Azure OpenAI resource
+3. Get your API key and endpoint from the resource
+4. Create a deployment and note the deployment name
+5. [Official Azure OpenAI Documentation](https://learn.microsoft.com/en-us/azure/ai-services/openai/overview)
 
 ## Features
 
-### 🤖 AI Code Assistant
-- Real-time code suggestions and improvements
-- Context-aware responses based on current file and workspace
-- Error analysis and solution recommendations
-- Interactive chat interface with editable messages
-- Code snippet suggestions with one-click application
+### Real-time Collaboration
+- Multiple users can edit code simultaneously
+- Live cursor tracking
+- Real-time chat between users
 
-### 📝 Code Editor
+### AI Code Assistant
+- Context-aware code suggestions
+- Error analysis and solutions
+- Code explanations and improvements
+- Room-specific chat history
+
+### Code Editor
 - Syntax highlighting
 - Multiple file support
+- Error detection
+- Output console
 - File system navigation
-- Real-time error detection
-- Output console integration
 
-### 💻 User Interface
-- Resizable chat window
-- Dark theme optimized for coding
-- Intuitive file management
-- Dynamic chat bubbles with markdown support
-- Easy-to-use suggestion acceptance/rejection
+## Troubleshooting
 
-## Getting Started
+### Common Issues
 
-### Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn
-- A valid Azure OpenAI API key
+1. **Server Connection Error**
+   - Check if server is running on port 5000
+   - Verify VITE_SERVER_URL in client .env
 
-### Installation
+2. **AI Assistant Not Working**
+   - Verify Azure OpenAI credentials
+   - Check deployment name matches your Azure setup
 
-1. Clone the repository
-```bash
-git clone https://github.com/yourusername/CodeChoreo.git
-cd CodeChoreo
-```
+3. **Port Conflicts**
+   - Server: Change PORT in .env
+   - Client: Edit vite.config.ts port
 
-2. Install dependencies
-```bash
-# Install server dependencies
-cd server
-npm install
+## Contributing
 
-# Install client dependencies
-cd ../client
-npm install
-```
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/YourFeature`)
+3. Commit changes (`git commit -m 'feat: add some feature'`)
+4. Push to branch (`git push origin feature/YourFeature`)
+5. Open a Pull Request
 
-3. Set up environment variables
-```bash
-# In server directory
-cp .env.example .env
+## License
 
-# In client directory
-cp .env.example .env
-```
-
-Configure the following environment variables:
-- Server: `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`
-- Client: `VITE_SERVER_URL`
-
-4. Start the development servers
-```bash
-# Start server (from server directory)
-npm run dev
-
-# Start client (from client directory)
-npm run dev
-```
-
-## Acknowledgments
-
-- Built with React and TypeScript
-- Powered by Azure OpenAI
-- UI components using Tailwind CSS
+MIT License - see [LICENSE](LICENSE) file
