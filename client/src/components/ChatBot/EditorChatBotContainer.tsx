@@ -1,9 +1,11 @@
 import React from 'react';
 import { useChatBot } from '@/context/ChatBotContext';
 import ChatBot from './ChatBot';
+import { useParams } from 'react-router-dom';
 
-const ChatBotContainer: React.FC = () => {
+const EditorChatBotContainer: React.FC = () => {
     const { isOpen, toggleChat, currentCode, currentError, currentFilePath } = useChatBot();
+    const { roomId } = useParams();
 
     if (!isOpen) return null;
 
@@ -12,7 +14,7 @@ const ChatBotContainer: React.FC = () => {
             codeContent={currentCode || undefined}
             error={currentError || undefined}
             filePath={currentFilePath || undefined}
-            roomId="default"
+            roomId={roomId || 'default'}
             onClose={toggleChat}
             onAcceptSuggestion={(suggestion) => {
                 // Handle suggestion acceptance
@@ -22,4 +24,4 @@ const ChatBotContainer: React.FC = () => {
     );
 };
 
-export default ChatBotContainer; 
+export default EditorChatBotContainer; 

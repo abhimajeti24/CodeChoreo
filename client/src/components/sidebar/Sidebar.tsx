@@ -65,8 +65,8 @@ function Sidebar() {
                     icon={viewIcons[VIEWS.RUN]}
                 />
                 <SidebarButton
-                    viewName={VIEWS.CLIENTS}
-                    icon={viewIcons[VIEWS.CLIENTS]}
+                    viewName={VIEWS.USERS}
+                    icon={viewIcons[VIEWS.USERS]}
                 />
                 <SidebarButton
                     viewName={VIEWS.SETTINGS}

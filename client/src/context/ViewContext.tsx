@@ -26,14 +26,14 @@ function ViewContextProvider({ children }: { children: ReactNode }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(!isMobile)
     const [viewComponents] = useState({
         [VIEWS.FILES]: <FilesView />,
-        [VIEWS.CLIENTS]: <UsersView />,
+        [VIEWS.USERS]: <UsersView />,
         [VIEWS.SETTINGS]: <SettingsView />,
         [VIEWS.CHATS]: <ChatsView />,
         [VIEWS.RUN]: <RunView />,
     })
     const [viewIcons] = useState({
         [VIEWS.FILES]: <LuFiles size={28} />,
-        [VIEWS.CLIENTS]: <PiUsers size={30} />,
+        [VIEWS.USERS]: <PiUsers size={30} />,
         [VIEWS.SETTINGS]: <IoSettingsOutline size={28} />,
         [VIEWS.CHATS]: <PiChats size={30} />,
         [VIEWS.RUN]: <PiPlay size={28} />,

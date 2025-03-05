@@ -3,7 +3,7 @@ import { IoMdSend } from 'react-icons/io';
 import { FaRobot } from 'react-icons/fa';
 import { FaUser } from 'react-icons/fa';
 import { IoMdClose } from 'react-icons/io';
-import { FaCheck, FaTimes, FaEdit } from 'react-icons/fa';
+import { FaCheck, FaTimes, FaEdit, FaPlus } from 'react-icons/fa';
 import axios from 'axios';
 
 // Create axios instance with base URL
@@ -29,14 +29,17 @@ interface ChatBotProps {
     codeContent?: string;
     error?: string;
     filePath?: string;
+    roomId: string;
     onAcceptSuggestion?: (suggestion: string) => void;
     onClose?: () => void;
 }
 
-const ChatBot: React.FC<ChatBotProps> = ({ codeContent, error, filePath, onAcceptSuggestion, onClose }) => {
+const ChatBot: React.FC<ChatBotProps> = ({ codeContent, error, filePath, roomId, onAcceptSuggestion, onClose }) => {
+    const userId = localStorage.getItem('userId');
+    const storageKey = `chatMessages_${userId}_${roomId}`;
+
     const [messages, setMessages] = useState<Message[]>(() => {
-        const userId = localStorage.getItem('userId');
-        const saved = localStorage.getItem(`chatMessages_${userId}`);
+        const saved = localStorage.getItem(storageKey);
         return saved ? JSON.parse(saved) : [];
     });
     const [input, setInput] = useState('');
@@ -50,52 +53,69 @@ const ChatBot: React.FC<ChatBotProps> = ({ codeContent, error, filePath, onAccep
     const resizeRef = useRef<HTMLDivElement>(null);
     const isDraggingRef = useRef(false);
 
+    // Update messages when room changes
     useEffect(() => {
-        const userId = localStorage.getItem('userId');
-        localStorage.setItem(`chatMessages_${userId}`, JSON.stringify(messages));
-    }, [messages]);
+        const saved = localStorage.getItem(storageKey);
+        setMessages(saved ? JSON.parse(saved) : []);
+    }, [storageKey]);
+
+    // Save messages with room-specific key
+    useEffect(() => {
+        localStorage.setItem(storageKey, JSON.stringify(messages));
+    }, [messages, storageKey]);
 
     useEffect(() => {
         localStorage.setItem('chatWidth', width.toString());
     }, [width]);
 
-    // Scroll to bottom when chatbot is opened
+    // Scroll to bottom when new messages are added
     useEffect(() => {
         if (chatContainerRef.current && messages.length > 0) {
             chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
         }
-    }, []); // Only run once when component mounts
+    }, [messages]); // Run when messages change
 
     // Add resize functionality
     useEffect(() => {
         const handleMouseDown = (e: MouseEvent) => {
             if (resizeRef.current?.contains(e.target as Node)) {
                 isDraggingRef.current = true;
-                document.addEventListener('mousemove', handleMouseMove);
-                document.addEventListener('mouseup', handleMouseUp);
+                document.body.style.cursor = 'ew-resize';
+                document.body.style.userSelect = 'none';
             }
         };
 
         const handleMouseMove = (e: MouseEvent) => {
             if (!isDraggingRef.current) return;
-            const newWidth = window.innerWidth - e.clientX;
-            if (newWidth >= 300 && newWidth <= 800) {
-                setWidth(newWidth);
-            }
+            e.preventDefault();
+            requestAnimationFrame(() => {
+                const newWidth = window.innerWidth - e.clientX;
+                if (newWidth >= 300 && newWidth <= 800) {
+                    setWidth(newWidth);
+                }
+            });
         };
 
         const handleMouseUp = () => {
-            isDraggingRef.current = false;
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
+            if (isDraggingRef.current) {
+                isDraggingRef.current = false;
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+            }
         };
 
         document.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mousemove', handleMouseMove, { passive: false });
+        document.addEventListener('mouseup', handleMouseUp);
+        document.addEventListener('mouseleave', handleMouseUp);
 
         return () => {
             document.removeEventListener('mousedown', handleMouseDown);
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
+            document.removeEventListener('mouseleave', handleMouseUp);
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
         };
     }, []);
 
@@ -126,17 +146,15 @@ const ChatBot: React.FC<ChatBotProps> = ({ codeContent, error, filePath, onAccep
                 context: msg.context
             }));
 
-            console.log('Sending request to:', `${api.defaults.baseURL}/api/chat`);
             const response = await api.post('/api/chat', {
                 message: input,
                 currentCode: codeContent,
                 filePath: filePath,
                 error: error,
                 outputLogs: document.querySelector('.output-section')?.textContent || null,
-                conversationHistory: recentMessages
+                conversationHistory: recentMessages,
+                roomId: roomId // Add roomId to the request
             });
-
-            console.log('Response:', response.data);
 
             const assistantMessage: Message = {
                 role: 'assistant',
@@ -149,17 +167,9 @@ const ChatBot: React.FC<ChatBotProps> = ({ codeContent, error, filePath, onAccep
             setMessages(prev => [...prev, assistantMessage]);
         } catch (err) {
             console.error('Error sending message:', err);
-            if (axios.isAxiosError(err)) {
-                console.error('Axios error details:', {
-                    status: err.response?.status,
-                    data: err.response?.data,
-                    headers: err.response?.headers
-                });
-            }
-            
             const errorMessage: Message = {
                 role: 'assistant',
-                content: 'Sorry, I encountered an error while processing your request. Please check the console for details and try again.',
+                content: 'Sorry, I encountered an error while processing your request. Please try again.',
                 timestamp: Date.now()
             };
             setMessages(prev => [...prev, errorMessage]);
@@ -187,6 +197,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ codeContent, error, filePath, onAccep
 
     const startNewChat = () => {
         setMessages([]);
+        localStorage.removeItem(storageKey);
         if (chatContainerRef.current) {
             chatContainerRef.current.scrollTop = 0;
         }
@@ -195,37 +206,39 @@ const ChatBot: React.FC<ChatBotProps> = ({ codeContent, error, filePath, onAccep
     const newChatButton = (
         <button
             onClick={startNewChat}
-            className="absolute top-2 right-12 z-10 rounded-md bg-gray-700 px-3 py-1 text-sm text-white hover:bg-gray-600"
-            title="Start a new chat"
+            className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-700"
+            title="Start new chat"
         >
-            New Chat
+            <FaPlus size={16} />
         </button>
     );
 
     return (
         <div 
-            className="fixed right-0 top-0 h-screen bg-gray-900 shadow-lg flex flex-col z-50"
+            className="fixed right-0 top-0 h-screen bg-gray-900 shadow-lg flex flex-col z-50 transition-[width] duration-75"
             style={{ width: `${width}px` }}
         >
             <div 
                 ref={resizeRef}
-                className="absolute left-0 top-0 h-full w-1 cursor-ew-resize hover:bg-blue-500 bg-gray-700"
+                className="absolute left-0 top-0 h-full w-1 cursor-ew-resize hover:bg-blue-500 bg-gray-700 transition-colors"
             />
             <div className="flex items-center justify-between p-4 border-b border-gray-700">
                 <div className="flex items-center">
                     <FaRobot className="text-blue-500 text-xl mr-2" />
                     <h2 className="text-white text-lg font-semibold">Code Assistant</h2>
                 </div>
-                {newChatButton}
-                {onClose && (
-                    <button
-                        onClick={onClose}
-                        className="text-gray-400 hover:text-white transition-colors"
-                        title="Close"
-                    >
-                        <IoMdClose size={24} />
-                    </button>
-                )}
+                <div className="flex items-center gap-2">
+                    {newChatButton}
+                    {onClose && (
+                        <button
+                            onClick={onClose}
+                            className="text-gray-400 hover:text-white transition-colors"
+                            title="Close"
+                        >
+                            <IoMdClose size={24} />
+                        </button>
+                    )}
+                </div>
             </div>
             
             <div 
