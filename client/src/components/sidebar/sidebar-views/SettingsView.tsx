@@ -16,8 +16,6 @@ function SettingsView() {
         setFontSize,
         fontFamily,
         setFontFamily,
-        showGitHubCorner,
-        setShowGitHubCorner,
         resetSettings,
     } = useSettings()
     const { viewHeight } = useResponsive()
@@ -30,8 +28,6 @@ function SettingsView() {
         setLanguage(e.target.value)
     const handleFontSizeChange = (e: ChangeEvent<HTMLSelectElement>) =>
         setFontSize(parseInt(e.target.value))
-    const handleShowGitHubCornerChange = (e: ChangeEvent<HTMLInputElement>) =>
-        setShowGitHubCorner(e.target.checked)
 
     useEffect(() => {
         // Set editor font family
@@ -87,19 +83,6 @@ function SettingsView() {
                 options={langNames}
                 title="Language"
             />
-            {/* Show GitHub corner option */}
-            <div className="mt-4 flex w-full items-center justify-between">
-                <label>Show github corner</label>
-                <label className="relative inline-flex cursor-pointer items-center">
-                    <input
-                        className="peer sr-only"
-                        type="checkbox"
-                        onChange={handleShowGitHubCornerChange}
-                        checked={showGitHubCorner}
-                    />
-                    <div className="peer h-6 w-12 rounded-full bg-darkHover outline-none duration-100 after:absolute after:left-1 after:top-1 after:flex after:h-4 after:w-4 after:items-center after:justify-center after:rounded-full after:bg-white after:font-bold after:outline-none after:duration-500 peer-checked:after:translate-x-6 peer-checked:after:border-white peer-focus:outline-none"></div>
-                </label>
-            </div>
             <button
                 className="mt-auto w-full rounded-md border-none bg-darkHover px-4 py-2 text-white outline-none"
                 onClick={resetSettings}

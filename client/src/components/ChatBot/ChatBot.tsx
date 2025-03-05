@@ -35,7 +35,8 @@ interface ChatBotProps {
 
 const ChatBot: React.FC<ChatBotProps> = ({ codeContent, error, filePath, onAcceptSuggestion, onClose }) => {
     const [messages, setMessages] = useState<Message[]>(() => {
-        const saved = localStorage.getItem('chatMessages');
+        const userId = localStorage.getItem('userId');
+        const saved = localStorage.getItem(`chatMessages_${userId}`);
         return saved ? JSON.parse(saved) : [];
     });
     const [input, setInput] = useState('');
@@ -50,7 +51,8 @@ const ChatBot: React.FC<ChatBotProps> = ({ codeContent, error, filePath, onAccep
     const isDraggingRef = useRef(false);
 
     useEffect(() => {
-        localStorage.setItem('chatMessages', JSON.stringify(messages));
+        const userId = localStorage.getItem('userId');
+        localStorage.setItem(`chatMessages_${userId}`, JSON.stringify(messages));
     }, [messages]);
 
     useEffect(() => {
@@ -169,17 +171,6 @@ const ChatBot: React.FC<ChatBotProps> = ({ codeContent, error, filePath, onAccep
     const handleAcceptSuggestion = (suggestion: string) => {
         if (onAcceptSuggestion) {
             onAcceptSuggestion(suggestion);
-            // Add confirmation message
-            const confirmMessage: Message = {
-                role: 'assistant',
-                content: 'Changes applied successfully!',
-                timestamp: Date.now(),
-                context: {
-                    code: codeContent,
-                    filePath: filePath
-                }
-            };
-            setMessages(prev => [...prev, confirmMessage]);
         }
     };
 
@@ -193,6 +184,23 @@ const ChatBot: React.FC<ChatBotProps> = ({ codeContent, error, filePath, onAccep
         ));
         setEditingMessageId(null);
     };
+
+    const startNewChat = () => {
+        setMessages([]);
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = 0;
+        }
+    };
+
+    const newChatButton = (
+        <button
+            onClick={startNewChat}
+            className="absolute top-2 right-12 z-10 rounded-md bg-gray-700 px-3 py-1 text-sm text-white hover:bg-gray-600"
+            title="Start a new chat"
+        >
+            New Chat
+        </button>
+    );
 
     return (
         <div 
@@ -208,6 +216,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ codeContent, error, filePath, onAccep
                     <FaRobot className="text-blue-500 text-xl mr-2" />
                     <h2 className="text-white text-lg font-semibold">Code Assistant</h2>
                 </div>
+                {newChatButton}
                 {onClose && (
                     <button
                         onClick={onClose}
