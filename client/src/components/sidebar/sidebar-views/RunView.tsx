@@ -41,6 +41,7 @@ function RunView() {
                         onChange={handleLanguageChange}
                     >
                         {supportedLanguages
+                            .filter(lang => lang.language.toLowerCase() !== 'brainfuck')
                             .sort((a, b) => (a.language > b.language ? 1 : -1))
                             .map((lang, i) => {
                                 return (

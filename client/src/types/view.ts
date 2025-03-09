@@ -1,8 +1,9 @@
 enum VIEWS {
     FILES = "FILES",
     CHATS = "CHATS",
-    USERS = "USERS",
+    CLIENTS = "CLIENTS",
     RUN = "RUN",
+    COPILOT = "COPILOT",
     SETTINGS = "SETTINGS",
 }
 
@@ -15,4 +16,4 @@ interface ViewContext {
     viewIcons: { [key in VIEWS]: JSX.Element }
 }
 
-export { VIEWS, ViewContext }
+export { ViewContext, VIEWS }

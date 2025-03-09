@@ -2,7 +2,6 @@ import { useAppContext } from "@/context/AppContext"
 import { useFileSystem } from "@/context/FileContext"
 import { useSettings } from "@/context/SettingContext"
 import { useSocket } from "@/context/SocketContext"
-import { useChatBot } from "@/context/ChatBotContext"
 import usePageEvents from "@/hooks/usePageEvents"
 import useResponsive from "@/hooks/useResponsive"
 import { editorThemes } from "@/resources/Themes"
@@ -27,7 +26,6 @@ function Editor() {
     const { socket } = useSocket()
     const { viewHeight } = useResponsive()
     const [timeOut, setTimeOut] = useState(setTimeout(() => {}, 0))
-    const { setCurrentCode, setCurrentFilePath, setCurrentError } = useChatBot()
     const filteredUsers = useMemo(
         () => users.filter((u) => u.username !== currentUser.username),
         [users, currentUser],
@@ -39,7 +37,6 @@ function Editor() {
 
         const file: FileSystemItem = { ...activeFile, content: code }
         setActiveFile(file)
-        setCurrentCode(code)
         const cursorPosition = view.state?.selection?.main?.head
         socket.emit(SocketEvent.TYPING_START, { cursorPosition })
         socket.emit(SocketEvent.FILE_UPDATED, {
@@ -54,17 +51,6 @@ function Editor() {
         )
         setTimeOut(newTimeOut)
     }
-
-    // Update ChatBot when active file changes
-    useEffect(() => {
-        if (activeFile) {
-            setCurrentCode(activeFile.content || '');
-            setCurrentFilePath(activeFile.name);
-        } else {
-            setCurrentCode(null);
-            setCurrentFilePath(null);
-        }
-    }, [activeFile, setCurrentCode, setCurrentFilePath]);
 
     // Listen wheel event to zoom in/out and prevent page reload
     usePageEvents()
@@ -81,15 +67,16 @@ function Editor() {
         if (langExt) {
             extensions.push(langExt)
         } else {
-            const error = "Syntax highlighting is unavailable for this language. Please adjust the editor settings; it may be listed under a different name.";
-            toast.error(error, {
-                duration: 5000,
-            });
-            setCurrentError(error);
+            toast.error(
+                "Syntax highlighting is unavailable for this language. Please adjust the editor settings; it may be listed under a different name.",
+                {
+                    duration: 5000,
+                },
+            )
         }
 
         setExtensions(extensions)
-    }, [filteredUsers, language, setCurrentError])
+    }, [filteredUsers, language])
 
     return (
         <CodeMirror

@@ -1,11 +1,17 @@
-import React from 'react';
-
-const Footer: React.FC = () => {
+function Footer() {
     return (
-        <footer className="bg-[#1e1e1e] text-white py-4 text-center">
-            <p>© 2024 CodeChoreo. All rights reserved.</p>
+        <footer className="static bottom-1 left-0 flex w-full justify-center sm:fixed">
+            <span>
+                Build with ❤️ by{" "}
+                <a
+                    href="https://github.com/sahilatahar"
+                    className="text-primary underline underline-offset-1"
+                >
+                    sahilatahar
+                </a>
+            </span>
         </footer>
-    );
-};
+    )
+}
 
-export default Footer;
+export default Footer

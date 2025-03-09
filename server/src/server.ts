@@ -6,7 +6,6 @@ import { SocketEvent, SocketId } from "./types/socket"
 import { USER_CONNECTION_STATUS, User } from "./types/user"
 import { Server } from "socket.io"
 import path from "path"
-import chatRouter from "./routes/chat"
 
 dotenv.config()
 
@@ -14,18 +13,9 @@ const app = express()
 
 app.use(express.json())
 
-// Configure CORS
-app.use(cors({
-	origin: ['http://localhost:5173', 'http://localhost:3000'],
-	methods: ['GET', 'POST'],
-	credentials: true,
-	allowedHeaders: ['Content-Type', 'Authorization']
-}))
+app.use(cors())
 
 app.use(express.static(path.join(__dirname, "public"))) // Serve static files
-
-// Add chat route
-app.use('/api', chatRouter)
 
 const server = http.createServer(app)
 const io = new Server(server, {
@@ -270,7 +260,7 @@ io.on("connection", (socket) => {
 	})
 })
 
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 3000
 
 app.get("/", (req: Request, res: Response) => {
 	// Send the index.html file
