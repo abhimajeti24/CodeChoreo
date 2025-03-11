@@ -71,10 +71,6 @@ Reference: [Github Marketplace](https://github.com/marketplace/models/azure-open
 ![WhatsApp Image 2025-03-09 at 23 32 51_0a3820ea](https://github.com/user-attachments/assets/0d91e050-6445-4d18-bcda-0f3307761a0b)
 ![WhatsApp Image 2025-03-09 at 23 32 51_964567f2](https://github.com/user-attachments/assets/1e810c71-b7cb-443b-9308-fd34cc3fd099)
 ![WhatsApp Image 2025-03-09 at 23 32 51_3e44315c](https://github.com/user-attachments/assets/47bd2c17-3a8a-4e0d-8696-e2c11e87b89b)
-
-
-https://github.com/user-attachments/assets/cbe1d224-b8a7-41ba-a9ea-0af178d524a3
-
 ![WhatsApp Image 2025-03-09 at 23 32 52_c73f71c8](https://github.com/user-attachments/assets/870c9e08-5580-4ffe-910c-ad0dbb2510ab)
 ![WhatsApp Image 2025-03-09 at 23 32 52_2d0b5d2b](https://github.com/user-attachments/assets/211deae4-0d0b-4950-88b4-bf88cae90a43)
 
